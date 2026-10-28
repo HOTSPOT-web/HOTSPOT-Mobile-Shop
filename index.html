@@ -150,7 +150,9 @@ function renderChips(){
 }
 function renderGrid(){
   $("grid").innerHTML=PRODUCTS.filter(p=>filter==="All"||p.cat===filter).map(p=>{
-    const st=p.img?`background-image:url('${p.img}')`:`background:${p.color}`;
+    const st = p.img
+  ? `background-image:url('/HOTSPOT-Mobile-Shop/${p.img}')`
+  : `background:${p.color}`;
     return `<article class="card" data-pid="${p.id}" tabindex="0" aria-label="View ${p.name}"><div class="pic" style="${st}" role="img" aria-label="${p.name}">${p.img?"":p.name[0]}</div>
     <div class="info"><h3>${p.name}</h3><span class="cat">${p.cat}</span>${p.desc?`<span class="cat" style="color:var(--ink)">${p.desc}</span>`:""}
     <div class="row"><span class="price">${money(p.price)}</span>
