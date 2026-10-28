@@ -1,0 +1,1 @@
+Put your product photos in this folder, then write the file name in products.js, e.g. img:"images/case1.jpg"
