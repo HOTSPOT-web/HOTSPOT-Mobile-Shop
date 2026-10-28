@@ -11,15 +11,15 @@ const PRODUCTS = [
   desc:"Bright rechargeable flashlight",
   details:["Type: Rechargeable","Charging: USB","Warranty: 1 month"]},
 
- {id:2,name:"Projector",cat:"Light",price:80,inStock:true,img:"images/a2.png",color:"#5b5f6e",
+ {id:2,name:"Projector",cat:"Light",price:80,inStock:true,img:"a2.png",color:"#5b5f6e",
   desc:"Mini projector for movies and games",
   details:["Connection: HDMI / USB","Use: Home, indoor","Warranty: 1 month"]},
 
- {id:3,name:"Speaker Wireless",cat:"Speaker",price:13,inStock:true,img:"images/a3.png",color:"#0f5c5a",
+ {id:3,name:"Speaker Wireless",cat:"Speaker",price:13,inStock:true,img:"a3.png",color:"#0f5c5a",
   desc:"Portable Bluetooth speaker",
   details:["Connection: Bluetooth","Charging: USB","Warranty: 1 month"]},
 
- {id:4,name:"SUP 3'",cat:"Games",price:12,inStock:true,img:"images/a4.png",color:"#8a5a2b",
+ {id:4,name:"SUP 3'",cat:"Games",price:12,inStock:true,img:"a4.png",color:"#8a5a2b",
   desc:"Handheld game console",
   details:["Games: Built-in","Charging: USB","Warranty: 1 month"]},
 
@@ -27,11 +27,11 @@ const PRODUCTS = [
   desc:"25W fast wall charger",
   details:["Power: 25W","Port: USB-C","Warranty: 1 month"]},
 
- {id:6,name:"Wireless Microphone HIFI Speaker",cat:"Speaker",price:18,inStock:true,img:"images/a5.png",color:"#7a6a8f",
+ {id:6,name:"Wireless Microphone HIFI Speaker",cat:"Speaker",price:18,inStock:true,img:"a5.png",color:"#7a6a8f",
   desc:"Wireless microphone with built-in speaker",
   details:["Connection: Bluetooth","Use: Karaoke, parties","Warranty: 1 month"]},
 
- {id:7,name:"Samsung Watch",cat:"Watch",price:110,inStock:true,img:"images/a6.png",color:"#a3476e",
+ {id:7,name:"Samsung Watch",cat:"Watch",price:110,inStock:true,img:"a6.png",color:"#a3476e",
   desc:"Smart watch",
   details:["Brand: Samsung","Connection: Bluetooth","Warranty: 1 month"]},
 
