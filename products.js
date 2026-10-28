@@ -7,7 +7,7 @@ const CURRENCY = "$";
 // desc: short text shown on the card AND in the popup.
 // details: list shown only in the popup. Use "Label: value" for two columns, or plain text for a single line.
 const PRODUCTS = [
- {id:1,name:"FlashLight",cat:"Light",price:15,inStock:true,img:"images/a1.png",color:"#3f6e9a",
+ {id:1,name:"FlashLight",cat:"Light",price:15,inStock:true,img:"a1.png",color:"#3f6e9a",
   desc:"Bright rechargeable flashlight",
   details:["Type: Rechargeable","Charging: USB","Warranty: 1 month"]},
 
