@@ -13,7 +13,7 @@ const PRODUCTS = [
 
  {id:2,name:"Projector",cat:"Light",price:80,inStock:true,img:"a2.png",color:"#5b5f6e",
   desc:"Mini projector for movies and games",
-  details:["Connection: HDMI / USB","Use: Home, indoor","Warranty: 1 month"]},
+  details:["Connection: HDMI / USB or via PHONE","Use: Home, indoor","Warranty: 1 month"]},
 
  {id:3,name:"Speaker Wireless",cat:"Speaker",price:13,inStock:true,img:"a3.png",color:"#0f5c5a",
   desc:"Portable Bluetooth speaker",
