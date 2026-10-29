@@ -1,6 +1,6 @@
 /* ====== EDIT THIS PART ====== */
 const SHOP_NAME = "Hotspot";
-const WHATSAPP = "96103059976"; // country code + number, no + or spaces (Lebanon = 961)
+const WHATSAPP = "96176551506"; // country code + number, no + or spaces (Lebanon = 961)
 const CURRENCY = "$";
 const PAYMENT_NOTE = "Pay on delivery"; // shown in the WhatsApp order message
 const ORDER_PREFIX = "#";  // text before the order number, e.g. "#" gives #0001. Use "" for none.
