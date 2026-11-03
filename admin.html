@@ -159,10 +159,41 @@ const app=initializeApp(FIREBASE_CONFIG),auth=getAuth(app),db=getFirestore(app);
 let products=[],catDocs=[],orders=[],ofilter="all",unsubP=null,unsubO=null,unsubC=null,editing=null;
 
 // ---------- login ----------
-const doLogin=async()=>{$("lerr").textContent="";
-  try{await signInWithEmailAndPassword(auth,$("em").value.trim(),$("pw").value)}
-  catch(e){$("lerr").textContent=/network/i.test(e.code||"")?"No internet connection.":"Wrong email or password."}};
+// Brute-force protection: progressive delay + lockout that survives page reloads.
+// 5 wrong tries = locked 15 min; each further lockout doubles it (max 24 h).
+const MAX_TRIES=5,BASE_LOCK=15*60e3,MAX_LOCK=24*3600e3,STEP_DELAY=[0,1e3,2e3,4e3,8e3];
+const SEC_KEY="admin_login_guard";
+const getG=()=>{try{return JSON.parse(localStorage.getItem(SEC_KEY))||{fails:0,lockUntil:0,level:0}}catch(e){return {fails:0,lockUntil:0,level:0}}};
+const setG=g=>{try{localStorage.setItem(SEC_KEY,JSON.stringify(g))}catch(e){}};
+let lockTimer=null;
+const fmt=ms=>{const t=Math.ceil(ms/1e3),h=Math.floor(t/3600),m=Math.floor(t%3600/60),sec=t%60;return (h?h+"h ":"")+(m||h?m+"m ":"")+sec+"s"};
+const showLock=()=>{
+  clearInterval(lockTimer);
+  const tick=()=>{const left=getG().lockUntil-Date.now();
+    if(left<=0){clearInterval(lockTimer);$("loginBtn").disabled=false;$("lerr").textContent="";return false}
+    $("loginBtn").disabled=true;$("lerr").textContent="Too many failed attempts. Try again in "+fmt(left)+".";return true};
+  if(tick())lockTimer=setInterval(tick,1000)};
+const fail=()=>{const g=getG();g.fails++;
+  if(g.fails>=MAX_TRIES){g.lockUntil=Date.now()+Math.min(BASE_LOCK*Math.pow(2,g.level),MAX_LOCK);g.level++;g.fails=0;setG(g);showLock()}
+  else setG(g)};
+const doLogin=async()=>{
+  if(getG().lockUntil>Date.now()){showLock();return}
+  const btn=$("loginBtn");if(btn.disabled)return;
+  $("lerr").textContent="";btn.disabled=true;
+  try{
+    await new Promise(r=>setTimeout(r,STEP_DELAY[Math.min(getG().fails,STEP_DELAY.length-1)]));
+    await signInWithEmailAndPassword(auth,$("em").value.trim(),$("pw").value);
+    setG({fails:0,lockUntil:0,level:0});$("pw").value="";
+  }catch(e){
+    const c=e.code||"";
+    if(/network/i.test(c))$("lerr").textContent="No internet connection.";
+    else if(c==="auth/too-many-requests"){const g=getG();g.lockUntil=Date.now()+BASE_LOCK;setG(g);showLock()}
+    else{$("lerr").textContent="Wrong email or password.";fail()}
+  }
+  if(getG().lockUntil<=Date.now())btn.disabled=false;
+};
 $("loginBtn").onclick=doLogin;$("pw").onkeydown=e=>{if(e.key==="Enter")doLogin()};
+showLock();
 $("logout").onclick=()=>signOut(auth);
 onAuthStateChanged(auth,u=>{
   $("login").hidden=!!u;$("app").hidden=!u;
