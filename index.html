@@ -156,6 +156,18 @@ footer a:focus-visible{outline:3px solid var(--rose);outline-offset:2px;border-r
   .tile:nth-child(1){grid-column:span 2;grid-row:span 2}
 }
 @media (prefers-reduced-motion:reduce){.tile{transition:none}}
+/* About us popup */
+#about{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));background:rgba(5,2,3,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#about.open{display:flex;animation:fade .2s}
+.aboutbox{position:relative;width:min(560px,100%);max-height:100%;overflow:auto;background:#140a0d;border:1px solid var(--line);border-radius:24px;box-shadow:0 0 60px rgba(229,38,47,.25);padding:30px 26px}
+.aboutbox h2{font-size:1.7rem;line-height:1.1;padding-right:36px;margin-bottom:6px}
+.aboutbox .tag{color:var(--rose);font-weight:700;margin:0 0 14px}
+.aboutbox p{margin:0 0 12px;color:var(--ink)}
+.aboutbox ul{list-style:none;margin:14px 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.aboutbox li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.aboutclose{position:absolute;top:14px;right:14px}
+.aboutwa{display:block;text-align:center;background:#1f9d55;color:#fff;border-radius:999px;padding:13px;font-weight:700;text-decoration:none;margin-top:16px}
+@media (prefers-reduced-motion:reduce){#about.open{animation:none}}
 </style>
 </head>
 <body>
@@ -185,11 +197,13 @@ footer a:focus-visible{outline:3px solid var(--rose);outline-offset:2px;border-r
         </div>
         <div>
             <h4>Contact</h4><ul>
-                <li><a id="fWa" href="#" target="_blank" rel="noopener">WhatsApp us</a></li>
-                <li><a id="fIg" href="https://instagram.com/hotspot.leb" target="_blank" rel="noopener">Instagram</a></li>
-                <li><span style="color:var(--muted)">Pay on delivery</span></li>
-                <li><span style="color:var(--muted)">Warranty on every item</span></li>
-            </ul>
+    <li><a id="fWa" href="#" target="_blank" rel="noopener">WhatsApp us</a></li>
+    <li><a id="fIg" href="https://instagram.com/hotspot.leb" target="_blank" rel="noopener">Instagram</a></li>
+    <li><button type="button" id="fAbout" style="all:unset;cursor:pointer;color:var(--ink)">About us</button></li>
+    <li><span style="color:var(--muted)">Broken Phone? We've Got the Fix.</span></li>
+    <li><span style="color:var(--muted)">Pay on delivery</span></li>
+    <li><span style="color:var(--muted)">Warranty on every item</span></li>
+</ul>
         </div>
     </div>
 
@@ -217,6 +231,22 @@ footer a:focus-visible{outline:3px solid var(--rose);outline-offset:2px;border-r
       <span class="pmstock" id="pmStock"></span>
       <button class="pmadd" id="pmAdd"></button>
     </div>
+  </div>
+</div>
+
+<div id="about" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+  <div class="aboutbox">
+    <button class="x aboutclose" id="aboutClose" aria-label="Close">×</button>
+    <h2 id="aboutTitle">About Hotspot</h2>
+    <p class="tag">Smart Choices. Quality Products. Reliable Repairs.</p>
+    <p>Hotspot is a shop in Hadath, Lebanon, where you can find a wide range of products at great prices, along with professional repair services for all types of mobile phones. From cracked screens and battery replacements to charging port repairs and more, we've got your phone covered. Browse what's in stock, add your picks to the cart, and send your order to us. We confirm it with you and deliver straight to your door. At Hotspot, we've got everything you need in one place!</p>
+    <ul>
+        <li>📍 <span>Hadath, Facing Al Sayde Church, Lebanon</span></li>
+        <li>🛠️ <span>Professional Phone Repairs</span></li>
+        <li>🕒 <span>Open daily, 9:30 AM – 7:30 PM</span></li>
+        <li>🕒 <span>Saturday, 10:00 AM – 6:00 PM / Sunday Closed.</span></li>
+    </ul>
+    <a class="aboutwa" id="aboutWa" href="#" target="_blank" rel="noopener">Chat with us on WhatsApp</a>
   </div>
 </div>
 
@@ -450,6 +480,15 @@ $("fYear").textContent=new Date().getFullYear();$("fName").textContent=SHOP_NAME
 $("fWa").href="https://wa.me/"+WHATSAPP;
 $("fCart").onclick=()=>$("cart").classList.add("open");
 $("fTop").onclick=e=>{e.preventDefault();window.scrollTo({top:0,behavior:"smooth"})};
+// About us popup
+const aboutEl=$("about");
+function openAbout(){aboutEl.classList.add("open");document.body.style.overflow="hidden";$("aboutClose").focus()}
+function closeAbout(){aboutEl.classList.remove("open");document.body.style.overflow="";$("fAbout").focus()}
+$("fAbout").onclick=openAbout;
+$("aboutClose").onclick=closeAbout;
+aboutEl.onclick=e=>{if(e.target===aboutEl)closeAbout()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&aboutEl.classList.contains("open"))closeAbout()});
+$("aboutWa").href="https://wa.me/"+WHATSAPP;
 // ---- database (optional): products come from Firebase when firebase-config.js is filled in ----
 window.DB_ON=typeof FIREBASE_CONFIG!=="undefined"&&!!FIREBASE_CONFIG&&!!FIREBASE_CONFIG.apiKey&&!/PASTE/.test(FIREBASE_CONFIG.apiKey);
 window.applyProducts=list=>{PRODUCTS.length=0;list.forEach(x=>PRODUCTS.push(x));
