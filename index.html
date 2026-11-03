@@ -69,6 +69,8 @@ aside.open{transform:none}
 input,textarea{width:100%;font:inherit;padding:10px 12px;margin-top:8px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
 .total{display:flex;justify-content:space-between;font-weight:700;font-size:1.15rem;margin:12px 0}
 .send{width:100%;background:#1f9d55;color:#fff;padding:14px;font-weight:700}
+.send.mail{background:#fff;color:#1a0c10;margin-top:10px}
+.send:disabled{opacity:.6;cursor:wait}
 .note{color:var(--muted);font-size:.85rem;margin:8px 0 0}
 .empty{color:var(--muted);text-align:center;padding:30px 0}
 .card{cursor:pointer;transition:transform .15s,border-color .15s}
@@ -229,7 +231,8 @@ footer a:focus-visible{outline:3px solid var(--rose);outline-offset:2px;border-r
   <p class="note" id="err" role="alert" style="color:var(--rose)"></p>
   <p class="note" id="ok" role="status" style="color:#5ee08f"></p>
   <button class="send" id="send">Send order on WhatsApp</button>
-  <p class="note">This opens WhatsApp with your order ready to send. Pay on delivery.</p>
+  <button class="send mail" id="sendMail">Send order by Gmail</button>
+  <p class="note">This opens WhatsApp or Gmail with your order ready to send. Pay on delivery.</p>
 </aside>
 
 <script>
@@ -394,7 +397,9 @@ $("items").onclick=e=>{const id=e.target.dataset.id;if(!id)return;cart[id]+=+e.t
 $("openCart").onclick=()=>$("cart").classList.add("open");
 $("closeCart").onclick=()=>$("cart").classList.remove("open");
 
-$("send").onclick=async()=>{
+// Shop email: set SHOP_EMAIL in products.js, or edit the address below.
+const MAIL_TO=(typeof SHOP_EMAIL!=="undefined"&&SHOP_EMAIL)||"your-shop@gmail.com";
+async function sendOrder(method){
   const ids=Object.keys(cart).filter(k=>lookup(k));
   const name=$("name").value.trim(),phone=$("phone").value.trim(),addr=$("addr").value.trim(),notes=$("notes").value.trim();
   $("ok").textContent="";
@@ -402,7 +407,7 @@ $("send").onclick=async()=>{
   if(!name||!phone||!addr){$("err").textContent="Please fill in your name, phone and address.";return}
   if(phone.replace(/\D/g,"").length<7){$("err").textContent="Please enter a valid phone number.";return}
   $("err").textContent="";
-  const btn=$("send");if(btn.disabled)return;btn.disabled=true;
+  const btn=$(method==="mail"?"sendMail":"send");if(btn.disabled)return;btn.disabled=true;
   const win=window.open("","_blank"); // opened now so the browser allows it, filled in below
   let num=null;
   if(window.nextOrderNo){try{num=await Promise.race([window.nextOrderNo(),new Promise((_,rej)=>setTimeout(rej,5000))])}catch(e){console.warn("order number",e)}}
@@ -421,11 +426,25 @@ $("send").onclick=async()=>{
     `Thank you for shopping with ${SHOP_NAME}!`].filter(x=>x!==null).join("\n");
   if(window.onOrder)window.onOrder({ref,name,phone,addr,notes,pay,total,
     items:ids.map(id=>{const {p,c,o,m}=lookup(id),q=cart[id];return {name:p.name,model:m||"",color:c?c.name:"",pack:o?pcs(o):"",qty:q,total:lineTotal(p,q,o)}})});
+  if(method==="mail"){
+    const subject=`New order ${ref} - ${SHOP_NAME}`,body=msg.replace(/\*/g,"");
+    const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    // phones: mailto opens the Gmail app; computers: Gmail compose in the browser
+    const url=mobile?`mailto:${MAIL_TO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      :`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(MAIL_TO)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    if(mobile){if(win&&!win.closed)win.close();window.location.href=url}
+    else if(win&&!win.closed)win.location.href=url;else window.location.href=url;
+    btn.disabled=false;
+    $("ok").textContent=`Order ${ref} is ready in Gmail. Press Send there to confirm it.`;
+    return;
+  }
   const url=`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
   if(win&&!win.closed)win.location.href=url;else window.location.href=url;
   btn.disabled=false;
   $("ok").textContent=`Order ${ref} is ready in WhatsApp. Press Send there to confirm it.`;
-};
+}
+$("send").onclick=()=>sendOrder("wa");
+$("sendMail").onclick=()=>sendOrder("mail");
 
 $("fYear").textContent=new Date().getFullYear();$("fName").textContent=SHOP_NAME;
 $("fWa").href="https://wa.me/"+WHATSAPP;
